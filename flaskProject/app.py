@@ -32,20 +32,18 @@ def index():
 
 @app.route('/fetch_reviews', methods=['POST'])
 def fetch_reviews():
-    business_name = request.form.get('businessName')  # Get the business name from the form
-    location = request.form.get('location')  # Get the location from the form
+    try:
+        # Get the business name and location from the form
+        business_name = request.form['businessName']
+        location = request.form['location']
 
-    if business_name and location:
-        try:
-            # Call your function to scrape and upload to MongoDB
-            place_id = fetch_yelp_place_id(business_name, location)  # Adjust this function as needed
-            fetch_yelp_reviews(place_id)  # Fetch reviews using the place ID
-            get_data()  # Fetch the reviews and create the JSON file
-            flash('Reviews fetched and uploaded successfully!', 'success')
-        except Exception as e:
-            flash(f'Error fetching reviews: {str(e)}', 'danger')
-    else:
-        flash('Please provide both business name and location!', 'danger')
+        # Call your function to scrape and upload to MongoDB
+        fetch_yelp_reviews(fetch_yelp_place_id(business_name, location))  # Adjust this if necessary
+        get_data()  # Fetch the reviews and create the JSON file
+
+        flash('Reviews fetched and uploaded successfully!', 'success')
+    except Exception as e:
+        flash(f'Error fetching reviews: {str(e)}', 'danger')
 
     return redirect(url_for('index'))
 
